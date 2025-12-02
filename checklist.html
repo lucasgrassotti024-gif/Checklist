@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Checklist de Veículos</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#0078ff;
+  --accent:#00b4ff;
+  --bg:#f5f8fb;
+  --card:#ffffff;
+  --text:#1a1a1a;
+  --muted:#666;
+  --border:#e3e6eb;
+  --shadow:0 8px 28px rgba(0,0,0,0.08);
+}
+
+/* Dark theme variables (contraste ajustado para inputs/selects) */
+.dark{
+  --bg:#0f1419;
+  --card:#1b2228;
+  --text:#e8eef5;
+  --muted:#a7b0bc;
+  --border:#2b3139;
+  --shadow:0 6px 22px rgba(0,0,0,0.6);
+}
+
+/* Base */
+*{box-sizing:border-box;font-family:"Inter",sans-serif;transition:all .18s ease;}
+body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+
+/* Header */
+header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 20px;background:var(--card);border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:20;box-shadow:var(--shadow);
+}
+.dark header{background:var(--card);}
+header h1{font-family:"Outfit";font-weight:800;color:var(--primary);margin:0}
+
+/* Theme toggle - neutral visual (not blue) */
+#themeToggle{
+  width:40px;height:40px;border-radius:10px;border:1px solid var(--border);
+  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+  background:transparent;color:var(--primary);font-size:1.05rem;
+  box-shadow:none;
+}
+#themeToggle:hover{transform:translateY(-2px)}
+
+/* Main container */
+main{
+  max-width:920px;margin:36px auto;padding:26px;background:var(--card);
+  border-radius:12px;box-shadow:var(--shadow);border:1px solid var(--border);flex:1;
+}
+.dark main{background:var(--card)}
+
+/* Form headings */
+h2{font-family:"Outfit";color:var(--primary);text-align:center;margin:0 0 18px 0}
+label{display:block;margin-top:14px;font-weight:700}
+
+/* Inputs / selects / textarea */
+input,select,textarea{
+  width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--text);outline:none;
+}
+input::placeholder, textarea::placeholder { color: #9aa4b2; }
+
+/* Improve contrast for dark mode inputs */
+.dark input, .dark select, .dark textarea {
+  background: #232a30;      /* medium dark (not black) */
+  color: #eaf0f7;           /* light text for readability */
+  border: 1px solid #333a42;
+}
+.dark input::placeholder, .dark textarea::placeholder {
+  color: #aeb9c4;
+}
+
+/* Button primary */
+.btn{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;border:none;padding:12px 16px;border-radius:10px;font-weight:700;cursor:pointer;
+}
+.btn:hover{transform:translateY(-2px)}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:14px}
+th,td{padding:10px;border:1px solid var(--border);text-align:center}
+th{background:var(--primary);color:#fff;text-align:left;padding-left:12px}
+td:first-child{text-align:left;padding-left:12px}
+
+/* Image previews */
+#imagePreview{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.thumb-img{width:150px;height:100px;object-fit:cover;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.08);cursor:zoom-in}
+
+/* Footer & toast */
+footer{text-align:center;padding:14px;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;display:none;z-index:9999}
+.toast.show{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Checklist</h1>
+  <button id="themeToggle" aria-label="Alternar tema">🌙</button>
+</header>
+
+<main>
+  <h2>Checklist de Veículos</h2>
+
+  <label for="tipoVeiculo">Veículo:</label>
+  <select id="tipoVeiculo" aria-label="Tipo de veículo">
+    <option value="">Selecione...</option>
+    <option value="Carro">Carro</option>
+    <option value="Caminhão">Caminhão</option>
+    <option value="Trator">Trator</option>
+  </select>
+
+  <label for="placa">Placa:</label>
+  <input id="placa" type="text" autocomplete="off" placeholder="ABC1D23">
+
+  <label for="km">KM Atual:</label>
+  <input id="km" type="number" inputmode="numeric" min="0">
+
+  <label for="horimetro">Horímetro da Bomba:</label>
+  <input id="horimetro" type="number" min="0">
+
+  <label for="data">Data:</label>
+  <input id="data" type="date">
+
+  <label for="motorista">Motorista:</label>
+  <input id="motorista" type="text" autocomplete="off">
+
+  <h3 style="margin-top:18px">Itens Inspecionados</h3>
+  <table aria-labelledby="itensTable">
+    <thead>
+      <tr><th>Item</th><th>OK</th><th>Regular</th><th>Ruim</th><th>Observação</th></tr>
+    </thead>
+    <tbody id="itensTable"></tbody>
+  </table>
+
+  <label style="margin-top:14px">Fotos do veículo:</label>
+  <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+    <button id="addImage" type="button" class="btn">Adicionar imagem</button>
+    <input id="inputImage" type="file" accept="image/*" multiple style="display:none">
+  </div>
+  <div id="imagePreview" aria-live="polite"></div>
+
+  <label style="margin-top:14px">Observações Gerais:</label>
+  <textarea id="obs" rows="4" placeholder="Observações..."></textarea>
+
+  <div style="margin-top:18px">
+    <button id="saveBtn" class="btn" type="button">Salvar Checklist</button>
+  </div>
+</main>
+
+<footer>© 2025 | Sistema de Checklists — Desenvolvido por <b>Lucas Grassotti Spolavori</b></footer>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ===== THEME TOGGLE (restored neutral style) ===== */
+(function(){
+  const toggle = document.getElementById('themeToggle');
+  if(!toggle) return;
+  try{
+    if(localStorage.getItem('tema') === 'dark'){
+      document.body.classList.add('dark');
+      toggle.textContent = '☀️';
+    }
+  }catch(e){}
+  toggle.addEventListener('click', () => {
+    const isDark = document.body.classList.toggle('dark');
+    toggle.textContent = isDark ? '☀️' : '🌙';
+    try{ localStorage.setItem('tema', isDark ? 'dark' : 'light'); }catch(e){}
+  });
+})();
+
+/* ===== CHECKLIST LOGIC (robust + image compression + fallback) ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  'use strict';
+
+  // helpers
+  const $ = sel => document.querySelector(sel);
+  const sanitizeKey = s => String(s || '').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\s-]/g,'').trim().replace(/\s+/g,'_').toLowerCase();
+  const toastEl = document.getElementById('toast');
+  function toast(msg, color='#00b42a'){ if(!toastEl) return; toastEl.style.background = color; toastEl.textContent = msg; toastEl.classList.add('show'); setTimeout(()=>toastEl.classList.remove('show'),3000); }
+  function safeGet(id){ return document.getElementById(id) || null; }
+
+  // elements
+  const tipoEl = $('#tipoVeiculo');
+  const placaEl = $('#placa');
+  const kmEl = $('#km');
+  const horimetroEl = $('#horimetro');
+  const dataEl = $('#data');
+  const motoristaEl = $('#motorista');
+  const itensTable = $('#itensTable');
+  const addImageBtn = $('#addImage');
+  const inputImage = $('#inputImage');
+  const imagePreview = $('#imagePreview');
+  const obsEl = $('#obs');
+  const saveBtn = $('#saveBtn');
+
+  // items (readable)
+  const itens = [
+    "Faróis","Lanternas","Freios","Pneus","Retrovisores",
+    "Limpadores","Nível de óleo","Água do radiador",
+    "Cinto de segurança","Extintor","Setas","Buzina","Saneamento interno"
+  ];
+  const metas = itens.map(label => ({ label, key: sanitizeKey(label) }));
+
+  // render table rows with safe names/ids
+  function renderItens(){
+    itensTable.innerHTML = '';
+    metas.forEach(meta=>{
+      const name = `itm_${meta.key}`;
+      const obsId = `obs_${meta.key}`;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${meta.label}</td>
+        <td><input type="radio" name="${name}" value="OK" aria-label="${meta.label} OK"></td>
+        <td><input type="radio" name="${name}" value="Regular" aria-label="${meta.label} Regular"></td>
+        <td><input type="radio" name="${name}" value="Ruim" aria-label="${meta.label} Ruim"></td>
+        <td style="text-align:left;padding:6px">
+          <input id="${obsId}" type="text" placeholder="Observação..." style="width:100%;padding:8px;border-radius:6px;border:1px solid var(--border)">
+        </td>`;
+      itensTable.appendChild(tr);
+    });
+  }
+
+  // images array
+  window.imagensSelecionadas = window.imagensSelecionadas || [];
+  function renderPreview(){
+    imagePreview.innerHTML = '';
+    (window.imagensSelecionadas || []).forEach((src,i)=>{
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = `Foto ${i+1}`;
+      img.className = 'thumb-img';
+      img.addEventListener('click', ()=>{
+        const overlay = document.createElement('div');
+        overlay.style.position='fixed';overlay.style.inset=0;overlay.style.background='rgba(0,0,0,0.85)';
+        overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.zIndex=9999;
+        const big = document.createElement('img'); big.src = src; big.style.maxWidth='92%'; big.style.maxHeight='92%'; big.style.borderRadius='12px';
+        overlay.appendChild(big);
+        overlay.addEventListener('click', ()=> overlay.remove());
+        document.body.appendChild(overlay);
+      });
+      imagePreview.appendChild(img);
+    });
+  }
+
+  // init
+  renderItens();
+  renderPreview();
+
+  // image selection
+  if(addImageBtn && inputImage){
+    addImageBtn.addEventListener('click', ()=> inputImage.click());
+    inputImage.addEventListener('change', e=>{
+      const files = Array.from(e.target.files || []);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          window.imagensSelecionadas.push(ev.target.result);
+          renderPreview();
+        };
+        reader.readAsDataURL(file);
+      });
+      inputImage.value = '';
+    });
+  }
+
+  /* ===== image resize helper =====
+     compress dataURL images using canvas to JPEG
+  */
+  async function resizeDataUrl(dataUrl, maxWidth = 1000, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      try {
+        const img = new Image();
+        img.onload = () => {
+          const scale = Math.min(1, maxWidth / img.width);
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          try {
+            const newDataUrl = canvas.toDataURL('image/jpeg', quality);
+            resolve(newDataUrl);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        img.onerror = () => reject(new Error('Erro ao carregar imagem para compressão'));
+        img.src = dataUrl;
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+
+  /* ===== trySaveChecklistWithImages: compress + fallback ===== */
+  async function trySaveChecklistWithImages(payload) {
+    try {
+      if (payload.fotos && payload.fotos.length) {
+        const maxImages = 6; // limita quantas imagens vamos tentar salvar
+        const compressed = [];
+        for (let i = 0; i < Math.min(payload.fotos.length, maxImages); i++) {
+          try {
+            const small = await resizeDataUrl(payload.fotos[i], 1000, 0.7);
+            compressed.push(small);
+          } catch (e) {
+            console.warn('Compress failed, pushing original', i, e);
+            compressed.push(payload.fotos[i]);
+          }
+        }
+        payload.fotos = compressed;
+      }
+
+      const key = Date.now().toString();
+      localStorage.setItem(key, JSON.stringify(payload));
+      return { ok: true, reason: 'saved_with_images', key };
+    } catch (err) {
+      console.warn('Erro ao salvar com imagens (provável quota):', err);
+
+      // tentativa de fallback: salvar sem imagens
+      try {
+        const fallback = Object.assign({}, payload, { fotos: [] });
+        const key2 = Date.now().toString();
+        localStorage.setItem(key2, JSON.stringify(fallback));
+        return { ok: true, reason: 'saved_without_images', key: key2 };
+      } catch (err2) {
+        console.error('Erro ao salvar sem imagens (fallback):', err2);
+        return { ok: false, reason: (err2 && err2.name) ? err2.name : 'save_failed', err: err2 };
+      }
+    }
+  }
+
+  /* ===== save handler: collects form, valida, chama trySaveChecklistWithImages ===== */
+  async function handleSave(e){
+    e && e.preventDefault();
+
+    const tipo = tipoEl ? tipoEl.value : '';
+    const placa = placaEl ? placaEl.value.trim() : '';
+    const km = kmEl ? kmEl.value.trim() : '';
+    const horimetro = horimetroEl ? horimetroEl.value.trim() : '';
+    const data = dataEl ? dataEl.value : '';
+    const motorista = motoristaEl ? motoristaEl.value.trim() : '';
+
+    if(!tipo || !placa || !km || !data || !motorista){
+      toast('Preencha todos os campos obrigatórios!', '#e63e3e');
+      return;
+    }
+
+    const itensObj = {};
+    const observacoesItens = {};
+    for(const meta of metas){
+      const name = `itm_${meta.key}`;
+      const radios = document.getElementsByName(name);
+      const checked = Array.from(radios || []).find(r => r.checked);
+      const obsField = safeGet(`obs_${meta.key}`);
+      const obsText = obsField ? (obsField.value || '').trim() : '';
+
+      if(!checked){
+        toast('Marque todas as inspeções!', '#e63e3e');
+        return;
+      }
+
+      itensObj[meta.label] = checked.value;
+      observacoesItens[meta.label] = obsText;
+    }
+
+    const payload = {
+      tipo, placa, km, horimetro, data, motorista,
+      obs: obsEl ? (obsEl.value || '') : '',
+      fotos: window.imagensSelecionadas || [],
+      itens: itensObj,
+      observacoesItens
+    };
+
+    // show saving toast
+    toast('Salvando checklist — processando imagens...', '#0078ff');
+
+    const res = await trySaveChecklistWithImages(payload);
+
+    if(res.ok){
+      if(res.reason === 'saved_with_images'){
+        toast('Checklist salvo com sucesso (imagens incluídas).', '#0078ff');
+      } else if(res.reason === 'saved_without_images'){
+        toast('Checklist salvo — imagens removidas por limite de armazenamento.', '#ffa800');
+        console.warn('Checklist salvo sem imagens. key:', res.key);
+      } else {
+        toast('Checklist salvo.', '#0078ff');
+      }
+      setTimeout(()=> window.location.href = 'index.html', 900);
+    } else {
+      toast('Erro ao salvar checklist — ver console.', '#d93333');
+      console.error('Salvar falhou:', res);
+    }
+  }
+
+  if(saveBtn){
+    saveBtn.removeEventListener('click', handleSave);
+    saveBtn.addEventListener('click', handleSave);
+  } else {
+    console.error('saveBtn não encontrado');
+  }
+
+  // expose debug helper
+  window.__checklist_debug = () => ({ metas, imagensSelecionadas: window.imagensSelecionadas, localStorageCount: Object.keys(localStorage).length });
+}); // DOMContentLoaded
+</script>
+</body>
+</html>
