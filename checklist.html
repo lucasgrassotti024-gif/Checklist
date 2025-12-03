@@ -162,6 +162,30 @@ footer{text-align:center;padding:14px;color:var(--muted);background:var(--card);
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+<!-- =========================
+     FIREBASE (APP + FIRESTORE)
+     ========================= -->
+<!-- SDK compat pra funcionar bem em HTML puro -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<script>
+// TODO: Substitua pelos dados do seu projeto Firebase
+// Pegue no console do Firebase em: Configurações do projeto -> Seus apps -> SDK de configuração
+const firebaseConfig = {
+  apiKey: "SUA_API_KEY_AQUI",
+  authDomain: "seu-projeto.firebaseapp.com",
+  projectId: "seu-projeto-id",
+  storageBucket: "seu-projeto.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:xxxxxxxxxxxxxxxxxxxx"
+};
+
+// Inicializa Firebase e Firestore
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
 <script>
 /* ===== THEME TOGGLE (restored neutral style) ===== */
 (function(){
@@ -180,7 +204,7 @@ footer{text-align:center;padding:14px;color:var(--muted);background:var(--card);
   });
 })();
 
-/* ===== CHECKLIST LOGIC (robust + image compression + fallback) ===== */
+/* ===== CHECKLIST LOGIC (robust + image compression + Firestore) ===== */
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
@@ -306,9 +330,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ===== trySaveChecklistWithImages: compress + fallback ===== */
+  /* ===== trySaveChecklistWithImages: Firestore + compress + fallback ===== */
   async function trySaveChecklistWithImages(payload) {
     try {
+      // compress some images before enviar pro servidor
       if (payload.fotos && payload.fotos.length) {
         const maxImages = 6; // limita quantas imagens vamos tentar salvar
         const compressed = [];
@@ -324,21 +349,21 @@ document.addEventListener('DOMContentLoaded', () => {
         payload.fotos = compressed;
       }
 
-      const key = Date.now().toString();
-      localStorage.setItem(key, JSON.stringify(payload));
-      return { ok: true, reason: 'saved_with_images', key };
-    } catch (err) {
-      console.warn('Erro ao salvar com imagens (provável quota):', err);
+      // salva no Firestore na coleção "checklists"
+      const docRef = await db.collection('checklists').add(payload);
+      return { ok: true, reason: 'saved_with_images_remote', id: docRef.id };
 
-      // tentativa de fallback: salvar sem imagens
+    } catch (err) {
+      console.warn('Erro ao salvar com imagens no Firestore:', err);
+
+      // tentativa de fallback: salvar sem imagens se deu erro por tamanho
       try {
         const fallback = Object.assign({}, payload, { fotos: [] });
-        const key2 = Date.now().toString();
-        localStorage.setItem(key2, JSON.stringify(fallback));
-        return { ok: true, reason: 'saved_without_images', key: key2 };
+        const docRef2 = await db.collection('checklists').add(fallback);
+        return { ok: true, reason: 'saved_without_images_remote', id: docRef2.id };
       } catch (err2) {
-        console.error('Erro ao salvar sem imagens (fallback):', err2);
-        return { ok: false, reason: (err2 && err2.name) ? err2.name : 'save_failed', err: err2 };
+        console.error('Erro ao salvar sem imagens (fallback Firestore):', err2);
+        return { ok: false, reason: (err2 && err2.code) ? err2.code : 'save_failed', err: err2 };
       }
     }
   }
@@ -382,20 +407,20 @@ document.addEventListener('DOMContentLoaded', () => {
       obs: obsEl ? (obsEl.value || '') : '',
       fotos: window.imagensSelecionadas || [],
       itens: itensObj,
-      observacoesItens
+      observacoesItens,
+      criadoEm: new Date().toISOString()
     };
 
     // show saving toast
-    toast('Salvando checklist — processando imagens...', '#0078ff');
+    toast('Salvando checklist — enviando para o servidor...', '#0078ff');
 
     const res = await trySaveChecklistWithImages(payload);
 
     if(res.ok){
-      if(res.reason === 'saved_with_images'){
-        toast('Checklist salvo com sucesso (imagens incluídas).', '#0078ff');
-      } else if(res.reason === 'saved_without_images'){
-        toast('Checklist salvo — imagens removidas por limite de armazenamento.', '#ffa800');
-        console.warn('Checklist salvo sem imagens. key:', res.key);
+      if(res.reason === 'saved_with_images_remote'){
+        toast('Checklist salvo com sucesso (com imagens).', '#0078ff');
+      } else if(res.reason === 'saved_without_images_remote'){
+        toast('Checklist salvo — imagens removidas por limite.', '#ffa800');
       } else {
         toast('Checklist salvo.', '#0078ff');
       }
@@ -414,7 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // expose debug helper
-  window.__checklist_debug = () => ({ metas, imagensSelecionadas: window.imagensSelecionadas, localStorageCount: Object.keys(localStorage).length });
+  window.__checklist_debug = () => ({ metas, imagensSelecionadas: window.imagensSelecionadas });
 }); // DOMContentLoaded
 </script>
 </body>
