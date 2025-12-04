@@ -9,9 +9,10 @@
 
 <style>
 :root{
+  /* Tema claro bem claro */
   --primary:#0078ff;
   --accent:#00b4ff;
-  --bg:#f5f8fb;
+  --bg:#ffffff;
   --card:#ffffff;
   --text:#1a1a1a;
   --muted:#666;
@@ -19,96 +20,248 @@
   --shadow:0 8px 28px rgba(0,0,0,0.08);
 }
 
-/* Dark theme variables (contraste ajustado para inputs/selects) */
+/* Tema escuro ajustado */
 .dark{
-  --bg:#0f1419;
-  --card:#1b2228;
-  --text:#e8eef5;
-  --muted:#a7b0bc;
-  --border:#2b3139;
+  --bg:#0b1120;
+  --card:#111827;
+  --text:#e5e7eb;
+  --muted:#9ca3af;
+  --border:#1f2937;
   --shadow:0 6px 22px rgba(0,0,0,0.6);
 }
 
 /* Base */
-*{box-sizing:border-box;font-family:"Inter",sans-serif;transition:all .18s ease;}
-body{margin:0;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+*{box-sizing:border-box;font-family:"Inter",sans-serif;transition:background-color .18s ease,color .18s ease,border-color .18s ease;}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
 
 /* Header */
 header{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:14px 20px;background:var(--card);border-bottom:1px solid var(--border);
-  position:sticky;top:0;z-index:20;box-shadow:var(--shadow);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 20px;
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:20;
+  box-shadow:var(--shadow);
 }
 .dark header{background:var(--card);}
-header h1{font-family:"Outfit";font-weight:800;color:var(--primary);margin:0}
+header h1{
+  font-family:"Outfit";
+  font-weight:800;
+  color:var(--primary);
+  margin:0;
+  font-size:1.1rem;
+}
 
 /* Theme toggle */
 #themeToggle{
-  width:40px;height:40px;border-radius:10px;border:1px solid var(--border);
-  display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
-  background:transparent;color:var(--primary);font-size:1.05rem;
+  width:40px;height:40px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  background:transparent;
+  color:var(--primary);
+  font-size:1.05rem;
   box-shadow:none;
 }
 #themeToggle:hover{transform:translateY(-2px)}
 
 /* Main container */
 main{
-  max-width:920px;margin:36px auto;padding:26px;background:var(--card);
-  border-radius:12px;box-shadow:var(--shadow);border:1px solid var(--border);flex:1;
+  max-width:920px;
+  width:100%;
+  margin:26px auto 32px auto;
+  padding:26px 24px;
+  background:var(--card);
+  border-radius:12px;
+  box-shadow:var(--shadow);
+  border:1px solid var(--border);
+  flex:1;
 }
 .dark main{background:var(--card)}
 
 /* Form headings */
-h2{font-family:"Outfit";color:var(--primary);text-align:center;margin:0 0 18px 0}
-label{display:block;margin-top:14px;font-weight:700}
+h2{
+  font-family:"Outfit";
+  color:var(--primary);
+  text-align:center;
+  margin:0 0 18px 0;
+  font-size:1.25rem;
+}
+label{
+  display:block;
+  margin-top:14px;
+  font-weight:700;
+  font-size:.95rem;
+}
 
 /* Inputs / selects / textarea */
 input,select,textarea{
-  width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);
-  background:transparent;color:var(--text);outline:none;
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:#f9fafb;
+  color:var(--text);
+  outline:none;
 }
 input::placeholder, textarea::placeholder { color: #9aa4b2; }
 
-/* Improve contrast for dark mode inputs */
-.dark input, .dark select, .dark textarea {
-  background: #232a30;
-  color: #eaf0f7;
-  border: 1px solid #333a42;
+/* Melhor leitura no modo escuro */
+.dark input,
+.dark select,
+.dark textarea {
+  background:#1f2933;
+  color:#eaf0f7;
+  border:1px solid #374151;
 }
-.dark input::placeholder, .dark textarea::placeholder {
-  color: #aeb9c4;
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color:#aeb9c4;
 }
 
 /* Button primary */
 .btn{
   background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:#fff;border:none;padding:12px 16px;border-radius:10px;font-weight:700;cursor:pointer;
+  color:#fff;
+  border:none;
+  padding:12px 16px;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  font-size:.95rem;
 }
 .btn:hover{transform:translateY(-2px)}
 
 /* Table */
-table{width:100%;border-collapse:collapse;margin-top:14px}
-th,td{padding:10px;border:1px solid var(--border);text-align:center}
-th{background:var(--primary);color:#fff;text-align:left;padding-left:12px}
-td:first-child{text-align:left;padding-left:12px}
+.table-wrapper{
+  width:100%;
+  overflow-x:auto;
+  margin-top:10px;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:640px;
+}
+th,td{
+  padding:10px;
+  border:1px solid var(--border);
+  text-align:center;
+}
+th{
+  background:var(--primary);
+  color:#fff;
+  text-align:left;
+  padding-left:12px;
+}
+td:first-child{
+  text-align:left;
+  padding-left:12px;
+}
 
 /* Image previews */
-#imagePreview{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
-.thumb-img{width:150px;height:100px;object-fit:cover;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.08);cursor:zoom-in}
+#imagePreview{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:10px
+}
+.thumb-img{
+  width:150px;
+  height:100px;
+  object-fit:cover;
+  border-radius:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  cursor:zoom-in
+}
 
 /* Footer & toast */
-footer{text-align:center;padding:14px;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
-.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;display:none;z-index:9999}
+footer{
+  text-align:center;
+  padding:14px;
+  color:var(--muted);
+  background:var(--card);
+  border-top:1px solid var(--border)
+}
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:26px;
+  transform:translateX(-50%);
+  padding:10px 16px;
+  border-radius:10px;
+  color:#fff;
+  font-weight:700;
+  display:none;
+  z-index:9999;
+  font-size:.9rem;
+}
 .toast.show{display:block}
 
-/* Responsivo básico */
-@media (max-width: 768px) {
-  main {
-    margin: 20px auto;
-    padding: 18px 14px;
+/* RESPONSIVO */
+@media (max-width: 900px){
+  main{
+    margin:20px auto 26px auto;
+    padding:22px 16px;
   }
-  header {
-    padding: 10px 14px;
+}
+
+@media (max-width: 700px){
+  header{
+    padding:12px 14px;
+  }
+  header h1{
+    font-size:1rem;
+  }
+  main{
+    margin:16px auto 22px auto;
+    padding:20px 14px;
+    border-radius:10px;
+  }
+  h2{
+    font-size:1.1rem;
+  }
+}
+
+@media (max-width: 480px){
+  header{
+    padding:10px 12px;
+  }
+  #themeToggle{
+    width:34px;height:34px;font-size:.95rem;
+  }
+  main{
+    margin:12px auto 18px auto;
+    padding:16px 12px;
+    border-radius:10px;
+  }
+  label{
+    font-size:.9rem;
+  }
+  input,select,textarea{
+    font-size:.9rem;
+  }
+  .btn{
+    width:100%;
+    text-align:center;
+  }
+  .thumb-img{
+    width:130px;
+    height:90px;
   }
 }
 </style>
@@ -146,16 +299,18 @@ footer{text-align:center;padding:14px;color:var(--muted);background:var(--card);
   <label for="motorista">Motorista:</label>
   <input id="motorista" type="text" autocomplete="off">
 
-  <h3 style="margin-top:18px">Itens Inspecionados</h3>
-  <table aria-labelledby="itensTable">
-    <thead>
-      <tr><th>Item</th><th>OK</th><th>Regular</th><th>Ruim</th><th>Observação</th></tr>
-    </thead>
-    <tbody id="itensTable"></tbody>
-  </table>
+  <h3 style="margin-top:18px;font-size:1rem;">Itens Inspecionados</h3>
+  <div class="table-wrapper">
+    <table aria-labelledby="itensTable">
+      <thead>
+        <tr><th>Item</th><th>OK</th><th>Regular</th><th>Ruim</th><th>Observação</th></tr>
+      </thead>
+      <tbody id="itensTable"></tbody>
+    </table>
+  </div>
 
   <label style="margin-top:14px">Fotos do veículo:</label>
-  <div style="display:flex;gap:10px;align-items:center;margin-top:6px">
+  <div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap">
     <button id="addImage" type="button" class="btn">Adicionar imagem</button>
     <input id="inputImage" type="file" accept="image/*" multiple style="display:none">
   </div>
@@ -173,12 +328,10 @@ footer{text-align:center;padding:14px;color:var(--muted);background:var(--card);
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<!-- FIREBASE (APP + FIRESTORE - compat) -->
+<!-- FIREBASE (APP + FIRESTORE) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
 <script>
-// SUA CONFIG REAL
 const firebaseConfig = {
   apiKey: "AIzaSyCxI5gx0LS0ny2y6UnPUCyW0zf1BjnTSco",
   authDomain: "checklist-rss3.firebaseapp.com",
@@ -188,8 +341,6 @@ const firebaseConfig = {
   appId: "1:179261205524:web:376152c3b94fb115f14b01",
   measurementId: "G-47CPMQ3ZTC"
 };
-
-// Inicializa Firebase e Firestore
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
@@ -212,12 +363,19 @@ const db = firebase.firestore();
   });
 })();
 
-/* CHECKLIST LOGIC */
+/* CHECKLIST LOGIC (mesma função, só com tema ajustado) */
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
   const $ = sel => document.querySelector(sel);
-  const sanitizeKey = s => String(s || '').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\s-]/g,'').trim().replace(/\s+/g,'_').toLowerCase();
+  const sanitizeKey = s => String(s || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-zA-Z0-9\s-]/g,'')
+    .trim()
+    .replace(/\s+/g,'_')
+    .toLowerCase();
+
   const toastEl = document.getElementById('toast');
   function toast(msg, color='#00b42a'){
     if(!toastEl) return;
@@ -276,9 +434,19 @@ document.addEventListener('DOMContentLoaded', () => {
       img.className = 'thumb-img';
       img.addEventListener('click', ()=>{
         const overlay = document.createElement('div');
-        overlay.style.position='fixed';overlay.style.inset=0;overlay.style.background='rgba(0,0,0,0.85)';
-        overlay.style.display='flex';overlay.style.alignItems='center';overlay.style.justifyContent='center';overlay.style.zIndex=9999;
-        const big = document.createElement('img'); big.src = src; big.style.maxWidth='92%'; big.style.maxHeight='92%'; big.style.borderRadius='12px';
+        overlay.style.position='fixed';
+        overlay.style.inset=0;
+        overlay.style.background='rgba(0,0,0,0.85)';
+        overlay.style.display='flex';
+        overlay.style.alignItems='center';
+        overlay.style.justifyContent='center';
+        overlay.style.zIndex=9999;
+        overlay.style.cursor='zoom-out';
+        const big = document.createElement('img');
+        big.src = src;
+        big.style.maxWidth='92%';
+        big.style.maxHeight='92%';
+        big.style.borderRadius='12px';
         overlay.appendChild(big);
         overlay.addEventListener('click', ()=> overlay.remove());
         document.body.appendChild(overlay);
