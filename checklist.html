@@ -42,7 +42,7 @@ header{
 .dark header{background:var(--card);}
 header h1{font-family:"Outfit";font-weight:800;color:var(--primary);margin:0}
 
-/* Theme toggle - neutral visual (not blue) */
+/* Theme toggle */
 #themeToggle{
   width:40px;height:40px;border-radius:10px;border:1px solid var(--border);
   display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
@@ -71,8 +71,8 @@ input::placeholder, textarea::placeholder { color: #9aa4b2; }
 
 /* Improve contrast for dark mode inputs */
 .dark input, .dark select, .dark textarea {
-  background: #232a30;      /* medium dark (not black) */
-  color: #eaf0f7;           /* light text for readability */
+  background: #232a30;
+  color: #eaf0f7;
   border: 1px solid #333a42;
 }
 .dark input::placeholder, .dark textarea::placeholder {
@@ -100,6 +100,17 @@ td:first-child{text-align:left;padding-left:12px}
 footer{text-align:center;padding:14px;color:var(--muted);background:var(--card);border-top:1px solid var(--border)}
 .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);padding:10px 16px;border-radius:10px;color:#fff;font-weight:700;display:none;z-index:9999}
 .toast.show{display:block}
+
+/* Responsivo básico */
+@media (max-width: 768px) {
+  main {
+    margin: 20px auto;
+    padding: 18px 14px;
+  }
+  header {
+    padding: 10px 14px;
+  }
+}
 </style>
 </head>
 <body>
@@ -162,23 +173,20 @@ footer{text-align:center;padding:14px;color:var(--muted);background:var(--card);
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<!-- =========================
-     FIREBASE (APP + FIRESTORE)
-     ========================= -->
-<!-- SDK compat pra funcionar bem em HTML puro -->
+<!-- FIREBASE (APP + FIRESTORE - compat) -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
 <script>
-// TODO: Substitua pelos dados do seu projeto Firebase
-// Pegue no console do Firebase em: Configurações do projeto -> Seus apps -> SDK de configuração
+// SUA CONFIG REAL
 const firebaseConfig = {
-  apiKey: "SUA_API_KEY_AQUI",
-  authDomain: "seu-projeto.firebaseapp.com",
-  projectId: "seu-projeto-id",
-  storageBucket: "seu-projeto.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:xxxxxxxxxxxxxxxxxxxx"
+  apiKey: "AIzaSyCxI5gx0LS0ny2y6UnPUCyW0zf1BjnTSco",
+  authDomain: "checklist-rss3.firebaseapp.com",
+  projectId: "checklist-rss3",
+  storageBucket: "checklist-rss3.appspot.com",
+  messagingSenderId: "179261205524",
+  appId: "1:179261205524:web:376152c3b94fb115f14b01",
+  measurementId: "G-47CPMQ3ZTC"
 };
 
 // Inicializa Firebase e Firestore
@@ -187,7 +195,7 @@ const db = firebase.firestore();
 </script>
 
 <script>
-/* ===== THEME TOGGLE (restored neutral style) ===== */
+/* THEME TOGGLE */
 (function(){
   const toggle = document.getElementById('themeToggle');
   if(!toggle) return;
@@ -204,18 +212,22 @@ const db = firebase.firestore();
   });
 })();
 
-/* ===== CHECKLIST LOGIC (robust + image compression + Firestore) ===== */
+/* CHECKLIST LOGIC */
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
-  // helpers
   const $ = sel => document.querySelector(sel);
   const sanitizeKey = s => String(s || '').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9\s-]/g,'').trim().replace(/\s+/g,'_').toLowerCase();
   const toastEl = document.getElementById('toast');
-  function toast(msg, color='#00b42a'){ if(!toastEl) return; toastEl.style.background = color; toastEl.textContent = msg; toastEl.classList.add('show'); setTimeout(()=>toastEl.classList.remove('show'),3000); }
+  function toast(msg, color='#00b42a'){
+    if(!toastEl) return;
+    toastEl.style.background = color;
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(()=>toastEl.classList.remove('show'),3000);
+  }
   function safeGet(id){ return document.getElementById(id) || null; }
 
-  // elements
   const tipoEl = $('#tipoVeiculo');
   const placaEl = $('#placa');
   const kmEl = $('#km');
@@ -229,7 +241,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const obsEl = $('#obs');
   const saveBtn = $('#saveBtn');
 
-  // items (readable)
   const itens = [
     "Faróis","Lanternas","Freios","Pneus","Retrovisores",
     "Limpadores","Nível de óleo","Água do radiador",
@@ -237,7 +248,6 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
   const metas = itens.map(label => ({ label, key: sanitizeKey(label) }));
 
-  // render table rows with safe names/ids
   function renderItens(){
     itensTable.innerHTML = '';
     metas.forEach(meta=>{
@@ -256,7 +266,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // images array
   window.imagensSelecionadas = window.imagensSelecionadas || [];
   function renderPreview(){
     imagePreview.innerHTML = '';
@@ -278,11 +287,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // init
   renderItens();
   renderPreview();
 
-  // image selection
   if(addImageBtn && inputImage){
     addImageBtn.addEventListener('click', ()=> inputImage.click());
     inputImage.addEventListener('change', e=>{
@@ -299,9 +306,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ===== image resize helper =====
-     compress dataURL images using canvas to JPEG
-  */
   async function resizeDataUrl(dataUrl, maxWidth = 1000, quality = 0.7) {
     return new Promise((resolve, reject) => {
       try {
@@ -330,12 +334,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ===== trySaveChecklistWithImages: Firestore + compress + fallback ===== */
   async function trySaveChecklistWithImages(payload) {
     try {
-      // compress some images before enviar pro servidor
       if (payload.fotos && payload.fotos.length) {
-        const maxImages = 6; // limita quantas imagens vamos tentar salvar
+        const maxImages = 6;
         const compressed = [];
         for (let i = 0; i < Math.min(payload.fotos.length, maxImages); i++) {
           try {
@@ -349,14 +351,12 @@ document.addEventListener('DOMContentLoaded', () => {
         payload.fotos = compressed;
       }
 
-      // salva no Firestore na coleção "checklists"
       const docRef = await db.collection('checklists').add(payload);
       return { ok: true, reason: 'saved_with_images_remote', id: docRef.id };
 
     } catch (err) {
       console.warn('Erro ao salvar com imagens no Firestore:', err);
 
-      // tentativa de fallback: salvar sem imagens se deu erro por tamanho
       try {
         const fallback = Object.assign({}, payload, { fotos: [] });
         const docRef2 = await db.collection('checklists').add(fallback);
@@ -368,7 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  /* ===== save handler: collects form, valida, chama trySaveChecklistWithImages ===== */
   async function handleSave(e){
     e && e.preventDefault();
 
@@ -411,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
       criadoEm: new Date().toISOString()
     };
 
-    // show saving toast
     toast('Salvando checklist — enviando para o servidor...', '#0078ff');
 
     const res = await trySaveChecklistWithImages(payload);
@@ -432,15 +430,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if(saveBtn){
-    saveBtn.removeEventListener('click', handleSave);
     saveBtn.addEventListener('click', handleSave);
   } else {
     console.error('saveBtn não encontrado');
   }
 
-  // expose debug helper
   window.__checklist_debug = () => ({ metas, imagensSelecionadas: window.imagensSelecionadas });
-}); // DOMContentLoaded
+});
 </script>
 </body>
 </html>
+
