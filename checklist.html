@@ -31,7 +31,11 @@
 }
 
 /* Base */
-*{box-sizing:border-box;font-family:"Inter",sans-serif;transition:background-color .18s ease,color .18s ease,border-color .18s ease;}
+*{
+  box-sizing:border-box;
+  font-family:"Inter",sans-serif;
+  transition:background-color .18s ease,color .18s ease,border-color .18s ease;
+}
 body{
   margin:0;
   background:var(--bg);
@@ -345,25 +349,41 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 </script>
 
+<!-- SCRIPT GLOBAL DO TEMA (corrigido p/ celular) -->
 <script>
-/* THEME TOGGLE */
-(function(){
+document.addEventListener('DOMContentLoaded', () => {
   const toggle = document.getElementById('themeToggle');
-  if(!toggle) return;
-  try{
-    if(localStorage.getItem('tema') === 'dark'){
-      document.body.classList.add('dark');
-      toggle.textContent = '☀️';
-    }
-  }catch(e){}
-  toggle.addEventListener('click', () => {
-    const isDark = document.body.classList.toggle('dark');
-    toggle.textContent = isDark ? '☀️' : '🌙';
-    try{ localStorage.setItem('tema', isDark ? 'dark' : 'light'); }catch(e){}
-  });
-})();
+  if (!toggle) return;
 
-/* CHECKLIST LOGIC (mesma função, só com tema ajustado) */
+  let saved = null;
+  try {
+    saved = localStorage.getItem('tema');
+  } catch (e) {
+    saved = null;
+  }
+
+  const isDark = saved === 'dark';
+
+  if (isDark) {
+    document.body.classList.add('dark');
+    toggle.textContent = '☀️';
+  } else {
+    document.body.classList.remove('dark');
+    toggle.textContent = '🌙';
+  }
+
+  toggle.addEventListener('click', () => {
+    const darkNow = document.body.classList.toggle('dark');
+    toggle.textContent = darkNow ? '☀️' : '🌙';
+    try {
+      localStorage.setItem('tema', darkNow ? 'dark' : 'light');
+    } catch (e) {}
+  });
+});
+</script>
+
+<script>
+/* CHECKLIST LOGIC (igual antes, só tema separado) */
 document.addEventListener('DOMContentLoaded', () => {
   'use strict';
 
@@ -608,4 +628,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+
 
