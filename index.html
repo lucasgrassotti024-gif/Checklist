@@ -11,7 +11,7 @@
 :root {
   --primary:#0078ff;
   --accent:#00b4ff;
-  --bg:#f5f8fb;
+  --bg:#ffffff;        /* mais claro no modo claro */
   --white:#ffffff;
   --card:#ffffff;
   --text:#1a1a1a;
@@ -20,16 +20,20 @@
   --shadow:0 8px 28px rgba(0,0,0,0.08);
 }
 .dark {
-  --bg:#0f1419;
-  --white:#1b2128;
-  --card:#1e252d;
+  --bg:#0b1120;        /* escuro, mas legível */
+  --white:#111827;
+  --card:#111827;
   --text:#e9eef5;
-  --muted:#a7b0bc;
-  --border:#2b3139;
+  --muted:#9ca3af;
+  --border:#1f2937;
   --shadow:0 4px 16px rgba(0,0,0,0.6);
 }
 
-*{box-sizing:border-box;font-family:"Inter",sans-serif;transition:all .25s ease;}
+*{
+  box-sizing:border-box;
+  font-family:"Inter",sans-serif;
+  transition:background-color .25s ease,color .25s ease,border-color .25s ease;
+}
 body{
   margin:0;
   background:var(--bg);
@@ -53,7 +57,7 @@ header{
   border-bottom:1px solid var(--border);
   box-shadow:var(--shadow);
 }
-.dark header{background:rgba(30,37,45,0.85);}
+.dark header{background:var(--card);}
 header h1{
   font-family:"Outfit";
   font-weight:800;
@@ -114,7 +118,7 @@ button{
   box-shadow:0 4px 14px rgba(0,120,255,0.3);
 }
 button:hover{transform:translateY(-2px);}
-.dark button{box-shadow:0 4px 14px rgba(0,120,255,0.4);}
+.dark button{box-shadow:0 4px 14px rgba(37,99,235,0.6);}
 
 /* RODAPÉ */
 footer{
@@ -128,6 +132,46 @@ footer{
   box-shadow:0 -3px 12px rgba(0,0,0,0.06);
 }
 .dark footer{background:var(--card);}
+
+/* RESPONSIVO */
+@media (max-width: 700px){
+  header{
+    padding:12px 18px;
+  }
+  header h1{
+    font-size:1.2rem;
+  }
+  main{
+    padding:32px 18px;
+  }
+}
+
+@media (max-width: 480px){
+  header{
+    padding:10px 14px;
+  }
+  header h1{
+    font-size:1.05rem;
+  }
+  #themeToggle{
+    width:34px;
+    height:34px;
+    font-size:1rem;
+  }
+  main{
+    padding:26px 14px;
+  }
+  h2{
+    font-size:1.4rem;
+  }
+  p{
+    font-size:.95rem;
+  }
+  button{
+    width:100%;
+    max-width:280px;
+  }
+}
 </style>
 </head>
 
