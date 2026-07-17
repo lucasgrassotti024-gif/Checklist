@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Login - Sistema de Checklists</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+    --primary:#0078ff;
+    --accent:#00b4ff;
+    --bg:#ffffff;
+    --white:#ffffff;
+    --card:#ffffff;
+    --text:#1a1a1a;
+    --muted:#666;
+    --border:#e3e6eb;
+    --shadow:0 8px 28px rgba(0,0,0,.08);
+}
+
+.dark{
+    --bg:#0b1120;
+    --white:#111827;
+    --card:#111827;
+    --text:#e9eef5;
+    --muted:#9ca3af;
+    --border:#1f2937;
+    --shadow:0 4px 16px rgba(0,0,0,.6);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:"Inter",sans-serif;
+    transition:background-color .25s,color .25s,border-color .25s;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+}
+
+/* HEADER */
+
+header{
+    position:sticky;
+    top:0;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px 26px;
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+    box-shadow:var(--shadow);
+    backdrop-filter:blur(14px);
+}
+
+.dark header{
+    background:var(--card);
+}
+
+header h1{
+    font-family:"Outfit";
+    color:var(--primary);
+    font-size:1.35rem;
+}
+
+#themeToggle{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    border:1px solid var(--border);
+    background:var(--card);
+    cursor:pointer;
+    font-size:18px;
+}
+
+.dark #themeToggle{
+    background:var(--white);
+}
+
+/* CONTEÚDO */
+
+main{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:40px 20px;
+}
+
+.login-card{
+    width:100%;
+    max-width:430px;
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:40px;
+    box-shadow:var(--shadow);
+}
+
+.dark .login-card{
+    background:var(--card);
+}
+
+.login-card h2{
+    font-family:"Outfit";
+    color:var(--primary);
+    text-align:center;
+    margin-bottom:12px;
+    font-size:2rem;
+}
+
+.login-card p{
+    text-align:center;
+    color:var(--muted);
+    margin-bottom:35px;
+    line-height:1.6;
+}
+
+/* Área reservada para o formulário */
+
+.login-form{
+
+}
+
+/* FOOTER */
+
+footer{
+    text-align:center;
+    padding:14px;
+    color:var(--muted);
+    font-size:.85rem;
+    background:var(--white);
+    border-top:1px solid var(--border);
+}
+
+.dark footer{
+    background:var(--card);
+}
+
+/* RESPONSIVO */
+
+@media(max-width:500px){
+
+    .login-card{
+        padding:28px;
+    }
+
+    header{
+        padding:12px 18px;
+    }
+
+    header h1{
+        font-size:1.1rem;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+
+<h1>Sistema de Checklists</h1>
+
+<button id="themeToggle">🌙</button>
+
+</header>
+
+<main>
+
+<div class="login-card">
+
+<h2>Entrar</h2>
+
+<p>
+
+Faça login para acessar o sistema.
+
+</p>
+
+<div class="login-form">
+
+<!-- Campos serão adicionados depois -->
+
+</div>
+
+</div>
+
+</main>
+
+<footer>
+
+© 2025 | Sistema de Checklists — Desenvolvido por <b>Lucas Grassotti Spolavori</b>
+
+</footer>
+
+<script>
+
+const toggle=document.getElementById("themeToggle");
+
+if(localStorage.getItem("tema")==="dark"){
+
+    document.body.classList.add("dark");
+    toggle.textContent="☀️";
+
+}
+
+toggle.onclick=()=>{
+
+    document.body.classList.toggle("dark");
+
+    const dark=document.body.classList.contains("dark");
+
+    toggle.textContent=dark?"☀️":"🌙";
+
+    localStorage.setItem("tema",dark?"dark":"light");
+
+};
+
+</script>
+
+</body>
+</html>
